@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><%= poem.title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.0/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 text-gray-900">
+    <div class="container mx-auto p-5">
+        <h1 class="text-4xl mb-2 text-center"><%= poem.title %></h1>
+        <% if (poem.image) { %>
+            <img src="<%= poem.image %>" class="w-full h-96 object-cover rounded-md mb-4">
+        <% } %>
+        <p class="text-gray-700 text-lg mb-5 whitespace-pre-line"><%= poem.content %></p>
+        <a href="/poems" class="text-blue-500 hover:underline">Back to Poems</a>
+    </div>
+</body>
+</html>

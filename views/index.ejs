@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Poems</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.0/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 text-gray-900">
+    <div class="container mx-auto p-5">
+        <h1 class="text-4xl mb-5 text-center">My Poems</h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <% poems.forEach(poem => { %>
+                <div class="bg-white rounded-lg shadow p-4">
+                    <% if (poem.image) { %>
+                        <img src="<%= poem.image %>" class="w-full h-48 object-cover rounded-md mb-4">
+                    <% } %>
+                    <h2 class="text-2xl font-semibold"><%= poem.title %></h2>
+                    <p class="text-gray-700"><%= poem.content.slice(0, 100) %>...</p>
+                    <a href="/poems/<%= poem._id %>" class="text-blue-500 hover:underline">Read More</a>
+                </div>
+            <% }) %>
+        </div>
+        <div class="text-center mt-5">
+            <a href="/poems/add" class="text-blue-500 hover:underline">Add a New Poem</a>
+        </div>
+    </div>
+</body>
+</html>
