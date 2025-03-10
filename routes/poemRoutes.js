@@ -15,7 +15,7 @@ router.get("/", async (req, res) => {
 });
 
 // Place the /add route BEFORE the /:id route
-router.get("/add", (req, res) => res.render("addPoems"));
+router.get("/add", (req, res) => res.render("addPoems",{}));
 
 router.get("/:id", async (req, res) => {
     try {
@@ -28,11 +28,35 @@ router.get("/:id", async (req, res) => {
     }
 });
 
+router.get('/poems', async (req, res) => {
+    try {
+        const poems = await Poem.find();  // Fetch poems from the database
+        res.render('addPoems', { poems });  // Pass poems to EJS template
+    } catch (error) {
+        console.log('Error fetching poems:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+
 router.post("/add", upload.single("image"), async (req, res) => {
     const { title, content, category } = req.body;
     const image = req.file ? "/images/" + req.file.filename : "";
     await Poem.create({ title, content, image, category });
     res.redirect("/poems");
 });
+
+// Delete Poem Route
+router.post('/delete/:id', async (req, res) => {
+    try {
+        const poemId = req.params.id;
+        await Poem.findByIdAndDelete(poemId);
+        res.redirect('/poems');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Error deleting poem.");
+    }
+});
+
 
 module.exports = router;
