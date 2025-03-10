@@ -5,7 +5,14 @@ const poemSchema = new mongoose.Schema({
     content: { type: String, required: true },
     image: { type: String },
     category: { type: String },
-    date: { type: Date, default: Date.now }
+    likes: { type: Number, default: 0 },  // New field for likes
+    comments: [                           // New field for comments
+        {
+            username: { type: String, required: true },
+            comment: { type: String, required: true },
+            timestamp: { type: Date, default: Date.now }
+        }
+    ]
 });
 
 module.exports = mongoose.model("Poem", poemSchema);

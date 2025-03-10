@@ -58,5 +58,30 @@ router.post('/delete/:id', async (req, res) => {
     }
 });
 
+// Route to like a poem
+router.post("/poems/:id/like", async (req, res) => {
+    try {
+        const poem = await Poem.findByIdAndUpdate(req.params.id, { $inc: { likes: 1 } }, { new: true });
+        res.json({ success: true, likes: poem.likes });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Failed to like poem" });
+    }
+});
+
+// Route to add a comment
+router.post("/poems/:id/comment", async (req, res) => {
+    const { username, comment } = req.body;
+    try {
+        const poem = await Poem.findByIdAndUpdate(
+            req.params.id,
+            { $push: { comments: { username, comment } } },
+            { new: true }
+        );
+        res.json({ success: true, comments: poem.comments });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Failed to add comment" });
+    }
+});
+
 
 module.exports = router;

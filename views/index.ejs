@@ -22,8 +22,8 @@
             <% poems.forEach(poem => { %>
                 <div class="bg-gray-800 rounded-lg shadow-lg p-4 transform transition duration-500 hover:scale-105 hover:bg-gray-700 relative">
                     <% if (poem.image) { %>
-                        <img src="<%= poem.image %>" class="w-full h-48 object-cover rounded-md mb-4 shadow-md transition duration-500 hover:scale-105">
-                    <% } %>
+                        <img src="<%= poem.image %>" class="w-full h-80 object-contain rounded-md mb-4 shadow-md transition duration-500 hover:scale-105">
+                        <% } %>
                     <h2 class="text-2xl font-semibold text-teal-300 mb-2"><%= poem.title %></h2>
                     <p class="text-gray-400 mb-4"><%= poem.content.slice(0, 100) %>...</p>
                     <a href="/poems/<%= poem._id %>" class="text-teal-400 hover:underline">Read More</a>

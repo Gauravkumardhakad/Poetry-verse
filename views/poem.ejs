@@ -3,11 +3,12 @@
 
 <head>
     <meta charset="UTF-8">
-    <title><%= poem.title %></title>
+    <title><%= poem.title %> - Whispers of Ink</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.0/dist/tailwind.min.css" rel="stylesheet">
 </head>
 
 <body class="bg-gray-900 text-gray-200 transition-colors duration-500">
+
     <!-- Dark Mode Toggle Button -->
     <div class="flex justify-end p-4">
         <button onclick="toggleTheme()" class="text-gray-200 focus:outline-none">
@@ -16,24 +17,66 @@
     </div>
 
     <div class="container mx-auto p-5">
-        <h1 class="text-4xl mb-4 text-center text-teal-400 font-bold animate-fade-in-down">
-            <%= poem.title %>
-        </h1>
-        
-        <% if (poem.image) { %>
-            <div class="overflow-hidden rounded-md mb-6 shadow-lg transform transition duration-500 hover:scale-105">
-                <img src="<%= poem.image %>" class="w-full h-96 object-cover transition duration-500 hover:scale-110">
+        <div class="bg-gray-800 rounded-lg shadow-lg p-6">
+            <% if (poem.image) { %>
+                <!-- Thumbnail Image with Click Event -->
+                <img src="<%= poem.image %>" onclick="openModal('<%= poem.image %>')" class="w-full h-80 object-contain rounded-md mb-4 shadow-md cursor-pointer transition duration-500 hover:scale-105">
+            <% } %>
+
+            <h1 class="text-4xl text-teal-400 mb-2 font-bold"><%= poem.title %></h1>
+            <p class="text-gray-400 mb-4 italic">Category: <span class="text-teal-300"><%= poem.category %></span></p>
+            <p class="text-gray-300 leading-relaxed mb-6 whitespace-pre-line"><%= poem.content %></p>
+
+            <!-- Like Button -->
+            <button onclick="likePoem('<%= poem._id %>')" class="bg-teal-500 text-white px-3 py-1 rounded mb-4">
+                ❤️ Like (<span id="likes-count"><%= poem.likes %></span>)
+            </button>
+
+            <!-- Delete Button -->
+            <form action="/poems/<%= poem._id %>/delete" method="POST" class="inline">
+                <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition">
+                    🗑️ Delete
+                </button>
+            </form>
+
+            <!-- Back to All Poems Link -->
+            <div class="text-center mt-6">
+                <a href="/poems" class="text-teal-400 hover:underline hover:text-teal-300 transition duration-300">Back to Poems</a>
             </div>
-        <% } %>
+        </div>
 
-        <p class="text-gray-300 text-lg mb-5 whitespace-pre-line leading-relaxed animate-fade-in">
-            <%= poem.content %>
-        </p>
+        <!-- Comment Section -->
+        <div class="bg-gray-800 rounded-lg shadow-lg p-6 mt-8">
+            <h2 class="text-2xl text-teal-400 mb-4">Comments</h2>
 
-        <div class="text-center">
-            <a href="/poems" class="text-teal-400 hover:underline hover:text-teal-300 transition duration-300">
-                ⬅ Back to Poems
-            </a>
+            <!-- Add Comment Form -->
+            <form onsubmit="addComment(event, '<%= poem._id %>')" class="mb-6">
+                <input type="text" name="username" placeholder="Your Name" required class="w-full mb-2 p-1 rounded text-gray-900">
+                <textarea name="comment" placeholder="Add a comment..." required class="w-full mb-2 p-1 rounded text-gray-900"></textarea>
+                <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded mt-2">Comment</button>
+            </form>
+
+            <!-- Display Comments -->
+            <div id="comments-section">
+                <% if (poem.comments.length > 0) { %>
+                    <% poem.comments.forEach(comment => { %>
+                        <div class="mb-4 border-b border-gray-700 pb-2">
+                            <strong class="text-teal-300"><%= comment.username %>:</strong>
+                            <p class="text-gray-400"><%= comment.comment %></p>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <p class="text-gray-500">No comments yet. Be the first to comment!</p>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Full-Screen Image -->
+    <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 hidden items-center justify-center z-50">
+        <div class="relative max-w-4xl mx-auto">
+            <button onclick="closeModal()" class="absolute top-2 right-2 text-white text-2xl font-bold">&times;</button>
+            <img id="modalImage" src="" class="max-h-screen w-auto rounded-lg shadow-lg">
         </div>
     </div>
 
@@ -63,23 +106,57 @@
         }
     </script>
 
-    <!-- Animations using Tailwind CSS -->
-    <style>
-        .animate-fade-in {
-            animation: fade-in 1s ease-out forwards;
+    <!-- Like and Comment Script -->
+    <script>
+        async function likePoem(poemId) {
+            const response = await fetch(`/poems/${poemId}/like`, { method: 'POST' });
+            const data = await response.json();
+            if (data.success) {
+                document.getElementById("likes-count").textContent = data.likes;
+            }
         }
-        .animate-fade-in-down {
-            animation: fade-in-down 1s ease-out forwards;
+
+        async function addComment(event, poemId) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const commentData = {
+                username: formData.get("username"),
+                comment: formData.get("comment")
+            };
+
+            const response = await fetch(`/poems/${poemId}/comment`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(commentData)
+            });
+            const data = await response.json();
+            if (data.success) {
+                const newComment = `
+                    <div class="mb-4 border-b border-gray-700 pb-2">
+                        <strong class="text-teal-300">${commentData.username}:</strong>
+                        <p class="text-gray-400">${commentData.comment}</p>
+                    </div>`;
+                document.getElementById("comments-section").innerHTML += newComment;
+                form.reset();
+            }
         }
-        @keyframes fade-in {
-            from { opacity: 0; }
-            to { opacity: 1; }
+
+        function openModal(imageSrc) {
+            const modal = document.getElementById("imageModal");
+            const modalImage = document.getElementById("modalImage");
+            modalImage.src = imageSrc;
+            modal.classList.remove("hidden");
+            document.body.style.overflow = "hidden";
         }
-        @keyframes fade-in-down {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+
+        function closeModal() {
+            const modal = document.getElementById("imageModal");
+            modal.classList.add("hidden");
+            document.getElementById("modalImage").src = "";
+            document.body.style.overflow = "auto";
         }
-    </style>
+    </script>
 </body>
 
 </html>
