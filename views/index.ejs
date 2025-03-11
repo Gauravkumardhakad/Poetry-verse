@@ -3,27 +3,47 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>My Poems</title>
+    <title>Whispers of Ink - My Poems</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.0/dist/tailwind.min.css" rel="stylesheet">
 </head>
 
 <body class="bg-gray-900 text-gray-200 transition-colors duration-500">
-    <!-- Dark Mode Toggle Button -->
-    <div class="flex justify-end p-4">
-        <button onclick="toggleTheme()" class="text-gray-200 focus:outline-none">
-            <span id="theme-icon">🌙</span>
-        </button>
-    </div>
+    <!-- Navigation Bar -->
+    <nav class="bg-gray-800 shadow-lg transition-colors duration-500">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="/" class="text-teal-400 text-2xl font-bold hover:text-teal-300 transition">Whispers of Ink</a>
+            <ul class="flex space-x-6">
+                <li><a href="/" class="text-gray-200 hover:text-teal-300 transition">Home</a></li>
+                <li><a href="/poems" class="text-gray-200 hover:text-teal-300 transition">Poems</a></li>
+                <li><a href="/poems/add" class="text-gray-200 hover:text-teal-300 transition">Add a Poem</a></li>
+            </ul>
+        </div>
+    </nav>
 
+    <!-- Introduction Section -->
+    <section class="bg-gray-800 py-10 transition-colors duration-500">
+        <div class="container mx-auto text-center">
+            <h1 class="text-4xl mb-3 text-teal-400 font-bold">Welcome to Whispers of Ink</h1>
+            <p class="text-gray-400 max-w-2xl mx-auto mb-6">
+                Explore a world of emotions and eloquent verses. Discover heartfelt poems that resonate with your soul,
+                or share your own creations with our community. Let your words leave an imprint on the canvas of time.
+            </p>
+            <a href="/poems/add" class="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-400 transition">
+                Share Your Poem
+            </a>
+        </div>
+    </section>
+
+    <!-- Poems Section -->
     <div class="container mx-auto p-5">
-        <h1 class="text-4xl mb-5 text-center text-teal-400 font-bold">Whispers of Ink</h1>
-        
+        <h2 class="text-3xl mb-5 text-center text-teal-400 font-bold">Latest Poems</h2>
+
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <% poems.forEach(poem => { %>
                 <div class="bg-gray-800 rounded-lg shadow-lg p-4 transform transition duration-500 hover:scale-105 hover:bg-gray-700 relative">
                     <% if (poem.image) { %>
-                        <img src="<%= poem.image %>" class="w-full h-80 object-contain rounded-md mb-4 shadow-md transition duration-500 hover:scale-105">
-                        <% } %>
+                        <img src="<%= poem.image %>" class="w-full h-80 object-cover rounded-md mb-4 shadow-md cursor-pointer transition duration-500 hover:scale-110">
+                    <% } %>
                     <h2 class="text-2xl font-semibold text-teal-300 mb-2"><%= poem.title %></h2>
                     <p class="text-gray-400 mb-4"><%= poem.content.slice(0, 100) %>...</p>
                     <a href="/poems/<%= poem._id %>" class="text-teal-400 hover:underline">Read More</a>
@@ -35,37 +55,7 @@
                 </div>
             <% }) %>
         </div>
-
-        <div class="text-center mt-8">
-            <a href="/poems/add" class="text-teal-400 hover:underline hover:text-teal-300 transition duration-300">Add a New Poem</a>
-        </div>
     </div>
-
-    <!-- Dark Mode Toggle Script -->
-    <script>
-        const themeIcon = document.getElementById("theme-icon");
-        const html = document.documentElement;
-
-        const currentTheme = localStorage.getItem("theme");
-        if (currentTheme === "dark") {
-            html.classList.add("dark");
-            themeIcon.textContent = "☀️";
-        } else {
-            themeIcon.textContent = "🌙";
-        }
-
-        function toggleTheme() {
-            if (html.classList.contains("dark")) {
-                html.classList.remove("dark");
-                themeIcon.textContent = "🌙";
-                localStorage.setItem("theme", "light");
-            } else {
-                html.classList.add("dark");
-                themeIcon.textContent = "☀️";
-                localStorage.setItem("theme", "dark");
-            }
-        }
-    </script>
 </body>
 
 </html>
